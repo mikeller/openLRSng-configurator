@@ -17,6 +17,73 @@
     border-bottom: 1px solid silver;
     background-color: #f4f4f4;
 }
+
+.tab-uploader .flash {
+    display: block;
+    float: left;
+    padding: 0 10px 0 10px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid silver;
+    background-color: #ececec;
+}
+
+.tab-uploader .select_firmware .version_select {
+    padding: 5px;
+    line-height: 20px;
+}
+.tab-uploader .select_firmware .version_select .center {
+    margin-left: 140px;
+}
+.tab-uploader .select_firmware .version_select .left {
+    width: 200px;
+    margin-left: 45px;
+}
+.tab-uploader .select_firmware .version_select .right {
+    float: left;
+}
+.tab-uploader .select_firmware .version_select input {
+    float: left;
+    margin: 2px 5px 0 0;
+}
+.tab-uploader .select_firmware .version {
+    float: left;
+    width: 170px;
+    height: 20px;
+    margin: 5px 30px 5px 5px;
+    border: 1px solid silver;
+}
+.tab-uploader .show_development {
+    float: left;
+    margin-left: 10px;
+    line-height: 22px;
+}
+.tab-uploader .show_development input {
+    float: left;
+    margin-top: 4px;
+}
+.tab-uploader .show_development span {
+    float: left;
+    margin-right: 5px;
+}
+.tab-uploader .load_remote_file {
+    display: block;
+    float: left;
+    padding: 0 10px 0 10px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid silver;
+    background-color: #ececec;
+}
+.tab-uploader .load_remote_file:hover {
+    background-color: #dedcdc;
+}
+
+
 .tab-uploader .select_firmware .module_select {
     padding: 5px;
     line-height: 20px;

@@ -1,6 +1,18 @@
 <div class="tab-uploader">
     <div class="left-side">
         <div class="select_firmware">
+            <div class="title" i18n="firmware_uploader_select_version_head"></div>
+            <div class="version_select">
+	            <select class="version" name="version">
+	                <option>Loading...</option>
+	            </select>
+	            <div class="show_development">
+	                <span i18n="firmware_uploader_show_development_releases"></span>
+	                <input type="checkbox" class="show_development_releases" />
+	            </div>
+             	<a href="#" class="load_remote_file" i18n="firmware_uploader_load_remote_file"></a>
+            </div>
+            <div class="clear-both"></div>
             <div class="title" i18n="firmware_uploader_select_board_head"></div>
             <div class="module_select">
                 <div class="center">

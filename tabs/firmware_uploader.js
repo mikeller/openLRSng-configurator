@@ -2,6 +2,7 @@
 
 function tab_initialize_uploader() {
     var uploader_hex_parsed = undefined;
+    var releaseChecker = new ReleaseChecker('firmware', 'https://api.github.com/repos/openLRSng/openLRSng/releases');
 
     $('#content').load("./tabs/firmware_uploader.html", function () {
         if (GUI.active_tab != 'firmware_uploader') {
@@ -11,6 +12,112 @@ function tab_initialize_uploader() {
 
         // translate to user-selected language
         localize();
+
+        function buildBoardOptions(releaseData) {
+        	console.log(releaseData);
+        	
+        	return;
+        	
+            if (!releaseData) {
+                $('select[name="board"]').empty().append('<option value="0">Offline</option>');
+                $('select[name="firmware_version"]').empty().append('<option value="0">Offline</option>');
+            } else {
+                var boards_e = $('select[name="board"]').empty();
+                var showDevReleases = ($('input.show_development_releases').is(':checked'));
+                boards_e.append($("<option value='0'>{0}</option>".format(chrome.i18n.getMessage('firmwareFlasherOptionLabelSelectBoard'))));
+
+                var versions_e = $('select[name="firmware_version"]').empty();
+                versions_e.append($("<option value='0'>{0}</option>".format(chrome.i18n.getMessage('firmwareFlasherOptionLabelSelectFirmwareVersion'))));
+
+                var releases = {};
+                var sortedTargets = [];
+                var unsortedTargets = [];
+                releaseData.forEach(function(release){
+                    release.assets.forEach(function(asset){
+                        var targetFromFilenameExpression = /betaflight_([\d.]+)?_?(\w+)(\-.*)?\.(.*)/;
+                        var match = targetFromFilenameExpression.exec(asset.name);
+
+                        if ((!showDevReleases && release.prerelease) || !match) {
+                            return;
+                        }
+                        var target = match[2];
+                        if($.inArray(target, unsortedTargets) == -1) {
+                            unsortedTargets.push(target);
+                        }
+                    });
+                    sortedTargets = unsortedTargets.sort();
+                });
+                sortedTargets.forEach(function(release) {
+                    releases[release] = [];
+                });
+
+                releaseData.forEach(function(release){
+                    var versionFromTagExpression = /v?(.*)/;
+                    var matchVersionFromTag = versionFromTagExpression.exec(release.tag_name);
+                    var version = matchVersionFromTag[1];
+
+                    release.assets.forEach(function(asset){
+                        var targetFromFilenameExpression = /betaflight_([\d.]+)?_?(\w+)(\-.*)?\.(.*)/;
+                        var match = targetFromFilenameExpression.exec(asset.name);
+
+                        if ((!showDevReleases && release.prerelease) || !match) {
+                            return;
+                        }
+
+                        var target = match[2];
+                        var format = match[4];
+
+                        if (format != 'hex') {
+                            return;
+                        }
+
+                        var date = new Date(release.published_at);
+                        var formattedDate = ("0" + date.getDate()).slice(-2) + "-" + ("0"+(date.getMonth()+1)).slice(-2) + "-" + date.getFullYear() + " " + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2);
+
+                        var descriptor = {
+                            "releaseUrl": release.html_url,
+                            "name"      : version,
+                            "version"   : version,
+                            "url"       : asset.browser_download_url,
+                            "file"      : asset.name,
+                            "target"    : target,
+                            "date"      : formattedDate,
+                            "notes"     : release.body,
+                            "status"    : release.prerelease ? "release-candidate" : "stable"
+                        };
+                        releases[target].push(descriptor);
+                    });
+                });
+                var selectTargets = [];
+                Object.keys(releases)
+                    .sort()
+                    .forEach(function(target, i) {
+                        var descriptors = releases[target];
+                        descriptors.forEach(function(descriptor){
+                            if($.inArray(target, selectTargets) == -1) {
+                                selectTargets.push(target);
+                                var select_e =
+                                        $("<option value='{0}'>{0}</option>".format(
+                                                descriptor.target
+                                        )).data('summary', descriptor);
+                                boards_e.append(select_e);
+                            }
+                        });
+                    });
+                TABS.firmware_flasher.releases = releases;
+                chrome.storage.local.get('selected_board', function (result) {
+                    if (result.selected_board) {
+                        $('select[name="board"]').val(result.selected_board);
+                        $('select[name="board"]').trigger("change");
+                    }
+                });
+            }
+        };
+
+        // bind events
+        $('input.show_development_releases').click(function () {
+            releaseChecker.loadReleaseData(buildBoardOptions);
+        });
 
         // we are in firmware flash mode
         GUI.operating_mode = 2;
@@ -366,5 +473,19 @@ function tab_initialize_uploader() {
                 }
             });
         }
+        
+        chrome.storage.local.get('show_development_releases', function (result) {
+            if (result.show_development_releases) {
+                $('input.show_development_releases').prop('checked', true);
+            } else {
+                $('input.show_development_releases').prop('checked', false);
+            }
+
+            releaseChecker.loadReleaseData(buildBoardOptions);
+
+            $('input.show_development_releases').change(function () {
+                chrome.storage.local.set({'show_development_releases': $(this).is(':checked')});
+            }).change();
+        });
     });
 }

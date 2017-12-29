@@ -225,11 +225,11 @@ function getManifestVersion(manifest) {
 };
 
 function checkForConfiguratorUpdates() {
-	setTimeout(function () {
-    var releaseChecker = new ReleaseChecker('configurator', 'https://api.github.com/repos/openLRSng/openLRSng-configurator/releases');
+    setTimeout(function () {
+        var releaseChecker = new ReleaseChecker('configurator', 'https://api.github.com/repos/openLRSng/openLRSng-configurator/releases');
 
-    releaseChecker.loadReleaseData(notifyOutdatedVersion);
-	}, 2000);
+        releaseChecker.loadReleaseData(notifyOutdatedVersion);
+    }, 2000);
 };
 
 function notifyOutdatedVersion(releaseData) {

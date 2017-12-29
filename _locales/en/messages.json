@@ -397,6 +397,15 @@
     "firmware_uploader_already_running_latest_firmware": {
         "message": "You are already running the <strong>latest</strong> firmware"
     },
+    "firmware_uploader_select_version_head": {
+        "message": "Select Firmware Version"
+    },
+    "firmware_uploader_show_development_releases": {
+        "message": "Show unstable versions"
+    },
+    "firmware_uploader_load_remote_file": {
+        "message": "Load Firmware from Internet"
+    },
     "firmware_uploader_select_board_head": {
         "message": "Select Board"
     },
